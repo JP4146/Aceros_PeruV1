@@ -1,0 +1,162 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model asistencia {
+  id_asistencia Int       @id @default(autoincrement())
+  id_usuario    Int
+  fecha         DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Date
+  hora_entrada  DateTime  @db.Time(6)
+  hora_salida   DateTime? @db.Time(6)
+  horas_totales Decimal?  @db.Decimal(5, 2)
+  usuarios      usuarios  @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "fk_usuario_asistencia")
+}
+
+model clientes {
+  id_cliente            Int          @id @default(autoincrement())
+  nombre_o_razon_social String       @db.VarChar(150)
+  documento             String       @unique @db.VarChar(11)
+  direccion             String?
+  tipo_cliente          tipo_persona
+  activo                Boolean?     @default(true)
+  ventas                ventas[]
+
+  @@index([documento], map: "idx_cliente_doc")
+}
+
+model compras_insumos {
+  id_compra       Int         @id @default(autoincrement())
+  id_proveedor    Int
+  id_insumo       Int
+  cantidad        Decimal     @db.Decimal(10, 2)
+  precio_unitario Decimal     @db.Decimal(10, 2)
+  fecha_ingreso   DateTime?   @default(now()) @db.Timestamp(6)
+  insumos         insumos     @relation(fields: [id_insumo], references: [id_insumo], onDelete: NoAction, onUpdate: NoAction, map: "fk_insumo_compra")
+  proveedores     proveedores @relation(fields: [id_proveedor], references: [id_proveedor], onDelete: NoAction, onUpdate: NoAction, map: "fk_proveedor_compra")
+}
+
+model detalle_ventas {
+  id_detalle               Int                  @id @default(autoincrement())
+  id_venta                 Int
+  id_producto              Int
+  cantidad                 Int
+  precio_unitario_aplicado Decimal              @db.Decimal(10, 2)
+  subtotal                 Decimal              @db.Decimal(10, 2)
+  productos_terminados     productos_terminados @relation(fields: [id_producto], references: [id_producto], onDelete: NoAction, onUpdate: NoAction, map: "fk_producto_detalle")
+  ventas                   ventas               @relation(fields: [id_venta], references: [id_venta], onDelete: NoAction, onUpdate: NoAction, map: "fk_venta_detalle")
+}
+
+model insumos {
+  id_insumo          Int                  @id @default(autoincrement())
+  nombre             String               @db.VarChar(100)
+  unidad_medida      String               @db.VarChar(20)
+  stock_actual       Decimal?             @default(0) @db.Decimal(10, 2)
+  stock_minimo       Decimal              @db.Decimal(10, 2)
+  activo             Boolean?             @default(true)
+  compras_insumos    compras_insumos[]
+  recetas_produccion recetas_produccion[]
+}
+
+model ordenes_produccion {
+  id_orden             Int                     @id @default(autoincrement())
+  id_producto          Int
+  id_operario          Int
+  cantidad_a_fabricar  Int
+  estado               tipo_estado_produccion? @default(Corte)
+  fecha_inicio         DateTime?               @default(now()) @db.Timestamp(6)
+  fecha_fin            DateTime?               @db.Timestamp(6)
+  usuarios             usuarios                @relation(fields: [id_operario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "fk_operario_orden")
+  productos_terminados productos_terminados    @relation(fields: [id_producto], references: [id_producto], onDelete: NoAction, onUpdate: NoAction, map: "fk_producto_orden")
+
+  @@index([estado], map: "idx_orden_estado")
+}
+
+model productos_terminados {
+  id_producto        Int                  @id @default(autoincrement())
+  nombre             String               @db.VarChar(100)
+  descripcion        String?
+  precio_venta       Decimal              @db.Decimal(10, 2)
+  stock_disponible   Int?                 @default(0)
+  imagen_url         String?              @db.VarChar(255)
+  activo             Boolean?             @default(true)
+  detalle_ventas     detalle_ventas[]
+  ordenes_produccion ordenes_produccion[]
+  recetas_produccion recetas_produccion[]
+}
+
+model proveedores {
+  id_proveedor    Int               @id @default(autoincrement())
+  razon_social    String            @db.VarChar(150)
+  ruc             String            @unique @db.VarChar(11)
+  contacto        String?           @db.VarChar(100)
+  telefono        String?           @db.VarChar(20)
+  activo          Boolean?          @default(true)
+  compras_insumos compras_insumos[]
+}
+
+model recetas_produccion {
+  id_receta            Int                  @id @default(autoincrement())
+  id_producto          Int
+  id_insumo            Int
+  cantidad_requerida   Decimal              @db.Decimal(10, 2)
+  insumos              insumos              @relation(fields: [id_insumo], references: [id_insumo], onDelete: NoAction, onUpdate: NoAction, map: "fk_insumo_receta")
+  productos_terminados productos_terminados @relation(fields: [id_producto], references: [id_producto], onDelete: NoAction, onUpdate: NoAction, map: "fk_producto_receta")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model spatial_ref_sys {
+  srid      Int     @id
+  auth_name String? @db.VarChar(256)
+  auth_srid Int?
+  srtext    String? @db.VarChar(2048)
+  proj4text String? @db.VarChar(2048)
+}
+
+model usuarios {
+  id_usuario         Int                  @id @default(autoincrement())
+  nombre             String               @db.VarChar(100)
+  user_login         String               @unique @db.VarChar(50)
+  password_hash      String               @db.VarChar(255)
+  rol                tipo_rol
+  activo             Boolean?             @default(true)
+  asistencia         asistencia[]
+  ordenes_produccion ordenes_produccion[]
+  ventas             ventas[]
+}
+
+model ventas {
+  id_venta         Int              @id @default(autoincrement())
+  id_cliente       Int
+  id_vendedor      Int
+  fecha_venta      DateTime?        @default(now()) @db.Timestamp(6)
+  monto_total      Decimal          @db.Decimal(10, 2)
+  tipo_comprobante String?          @db.VarChar(50)
+  detalle_ventas   detalle_ventas[]
+  clientes         clientes         @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction, map: "fk_cliente_venta")
+  usuarios         usuarios         @relation(fields: [id_vendedor], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "fk_vendedor_venta")
+
+  @@index([fecha_venta], map: "idx_venta_fecha")
+}
+
+enum tipo_estado_produccion {
+  Corte
+  Soldadura
+  Pintura
+  Acabado
+}
+
+enum tipo_persona {
+  Natural
+  Jur_dico @map("Jurídico")
+}
+
+enum tipo_rol {
+  Administrador
+  Vendedor
+  Operario
+}
