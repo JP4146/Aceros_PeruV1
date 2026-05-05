@@ -82,8 +82,8 @@ model productos_terminados {
   descripcion        String?
   precio_venta       Decimal              @db.Decimal(10, 2)
   stock_disponible   Int?                 @default(0)
-  imagen_url         String?              @db.VarChar(255)
   activo             Boolean?             @default(true)
+  imagen_url         String?              @db.VarChar(255)
   detalle_ventas     detalle_ventas[]
   ordenes_produccion ordenes_produccion[]
   recetas_produccion recetas_produccion[]
@@ -106,15 +106,6 @@ model recetas_produccion {
   cantidad_requerida   Decimal              @db.Decimal(10, 2)
   insumos              insumos              @relation(fields: [id_insumo], references: [id_insumo], onDelete: NoAction, onUpdate: NoAction, map: "fk_insumo_receta")
   productos_terminados productos_terminados @relation(fields: [id_producto], references: [id_producto], onDelete: NoAction, onUpdate: NoAction, map: "fk_producto_receta")
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model spatial_ref_sys {
-  srid      Int     @id
-  auth_name String? @db.VarChar(256)
-  auth_srid Int?
-  srtext    String? @db.VarChar(2048)
-  proj4text String? @db.VarChar(2048)
 }
 
 model usuarios {
