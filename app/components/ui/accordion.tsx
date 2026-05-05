@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+// @ts-ignore
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "lucide-react";
 
