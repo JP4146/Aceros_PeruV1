@@ -9,8 +9,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Faltan credenciales' }, { status: 400 })
     }
 
-    const user = await prisma.usuarios.findUnique({
-      where: { user_login: username },
+    const user = await prisma.usuarios.findFirst({
+      where: { 
+        user_login: {
+          equals: username,
+          mode: 'insensitive'
+        }
+      },
     })
 
     if (!user) {

@@ -25,7 +25,7 @@ export function TopBar({ userRole, userName, notifications, onMenuToggle, onLogo
   };
 
   return (
-    <header className="h-20 bg-white/80 backdrop-blur-md border-b border-[var(--border)] fixed top-0 right-0 left-64 z-30 flex items-center justify-between px-10 transition-all">
+    <header className="h-20 bg-white/80 backdrop-blur-md border-b border-[var(--border)] fixed top-0 right-0 left-0 lg:left-64 z-30 flex items-center justify-between px-4 md:px-10 transition-all">
       <button
         onClick={onMenuToggle}
         className="lg:hidden p-2 hover:bg-gray-100 rounded-lg mr-4"

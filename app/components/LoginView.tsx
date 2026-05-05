@@ -56,7 +56,7 @@ export function LoginView({ onLogin }: LoginViewProps) {
       <div className="absolute -bottom-8 left-20 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
 
       <div className="w-full max-w-md relative">
-        <div className="bg-white/10 backdrop-blur-2xl border border-white/20 p-10 rounded-3xl shadow-2xl">
+        <div className="bg-white/10 backdrop-blur-2xl border border-white/20 p-6 md:p-10 rounded-3xl shadow-2xl">
           <div className="flex flex-col items-center mb-8">
             <div className="w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-xl shadow-blue-900/40 mb-4">
               <ShieldCheck className="w-10 h-10 text-white" />
@@ -76,6 +76,10 @@ export function LoginView({ onLogin }: LoginViewProps) {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="admin, vendedor1, operario1..."
+                  autoCapitalize="none"
+                  autoComplete="username"
+                  autoCorrect="off"
+                  spellCheck="false"
                   className="w-full bg-slate-800/50 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all"
                 />
               </div>
@@ -91,6 +95,10 @@ export function LoginView({ onLogin }: LoginViewProps) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
+                  autoCapitalize="none"
+                  autoComplete="current-password"
+                  autoCorrect="off"
+                  spellCheck="false"
                   className="w-full bg-slate-800/50 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all"
                 />
               </div>

@@ -168,7 +168,8 @@ export function VentasModule() {
         </div>
       ) : (
           <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
-              <table className="w-full text-left">
+              <div className="overflow-x-auto">
+                  <table className="w-full text-left">
                   <thead className="bg-slate-50 border-b border-slate-200">
                       <tr>
                           <th className="px-8 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest">Producto</th>
